@@ -57,3 +57,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .prose {
+    max-width: 65ch;
+    color: inherit;
+  }
+  .prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    font-weight: 500;
+  }
+  .prose strong {
+    color: inherit;
+    font-weight: 600;
+  }
+  .prose em {
+    color: inherit;
+  }
+  .prose blockquote {
+    font-weight: 500;
+    font-style: italic;
+    color: inherit;
+    border-left-width: 0.25rem;
+    border-left-color: hsl(var(--muted-foreground) / 0.3);
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-left: 1em;
+  }
+}
