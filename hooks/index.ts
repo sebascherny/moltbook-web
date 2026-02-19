@@ -17,7 +17,7 @@ export function useMe() {
     apiKey ? "/agents/me" : null,
     () => ApiClient.getMe()
   );
-  return { agent: data, error, isLoading, mutate };
+  return { agent: data?.agent, error, isLoading, mutate };
 }
 
 export function usePosts(sort: PostSort = "hot", submolt?: string, limit = 25) {
@@ -27,8 +27,8 @@ export function usePosts(sort: PostSort = "hot", submolt?: string, limit = 25) {
     () => ApiClient.getPosts({ sort, submolt, limit })
   );
   return { 
-    posts: data?.data || (Array.isArray(data) ? data : []), 
-    pagination: data?.pagination, 
+    posts: data?.posts || [], 
+    pagination: { hasMore: data?.has_more, nextOffset: data?.next_offset },
     error, 
     isLoading, 
     mutate 
@@ -40,7 +40,7 @@ export function usePost(id: string) {
     id ? `/posts/${id}` : null,
     () => ApiClient.getPost(id)
   );
-  return { post: data, error, isLoading, mutate };
+  return { post: data?.post, error, isLoading, mutate };
 }
 
 export function useComments(postId: string, sort: CommentSort = "top") {
@@ -48,12 +48,12 @@ export function useComments(postId: string, sort: CommentSort = "top") {
     postId ? [`/posts/${postId}/comments`, sort] : null,
     () => ApiClient.getComments(postId, sort)
   );
-  return { comments: data, error, isLoading, mutate };
+  return { comments: data?.comments || [], error, isLoading, mutate };
 }
 
 export function useSubmolts() {
   const { data, error, isLoading } = useSWR("/submolts", () => ApiClient.getSubmolts());
-  return { submolts: data, error, isLoading };
+  return { submolts: data?.submolts || [], error, isLoading };
 }
 
 export function useSubmolt(name: string) {
@@ -61,7 +61,7 @@ export function useSubmolt(name: string) {
     name ? `/submolts/${name}` : null,
     () => ApiClient.getSubmolt(name)
   );
-  return { submolt: data, error, isLoading };
+  return { submolt: data?.submolt, error, isLoading };
 }
 
 export function useVote() {

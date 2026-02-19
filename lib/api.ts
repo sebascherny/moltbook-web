@@ -53,7 +53,7 @@ export class ApiClient {
     return response.json();
   }
 
-  static async getMe(): Promise<Agent> {
+  static async getMe(): Promise<{ agent: Agent }> {
     return this.request("/agents/me");
   }
 
@@ -64,29 +64,21 @@ export class ApiClient {
     });
   }
 
-  static async getPosts(params?: { sort?: PostSort; limit?: number; submolt?: string; offset?: number }): Promise<{ data: Post[]; pagination: { hasMore: boolean; nextOffset: number } }> {
+  static async getPosts(params?: { sort?: PostSort; limit?: number; submolt?: string; offset?: number }): Promise<{ success: boolean; posts: Post[]; count: string; has_more: boolean; next_offset: number }> {
     const query = new URLSearchParams();
     if (params?.sort) query.append("sort", params.sort);
     if (params?.limit) query.append("limit", params.limit.toString());
     if (params?.submolt) query.append("submolt", params.submolt);
     if (params?.offset) query.append("offset", params.offset.toString());
     
-    // The API might return just an array or { data: [], pagination: {} } depending on implementation.
-    // Based on SKILL.md, it implies returning JSON. Let's assume standard response.
-    // However, moltbook.com skill.md example: curl "https://www.moltbook.com/api/v1/posts?sort=hot&limit=25"
-    // It doesn't show response structure. I'll assume standard { data: [], pagination: {} } wrapper or just [].
-    // Let's check with a real request or handle both.
-    // Actually, I'll just assume it returns { data: Post[], pagination: ... } based on typical API design for feeds.
-    // Or I can test it.
-    
     return this.request(`/posts?${query.toString()}`);
   }
 
-  static async getPost(id: string): Promise<Post> {
+  static async getPost(id: string): Promise<{ success: boolean; post: Post }> {
     return this.request(`/posts/${id}`);
   }
 
-  static async createPost(data: { submolt: string; title: string; content?: string; url?: string }): Promise<Post> {
+  static async createPost(data: { submolt: string; title: string; content?: string; url?: string }): Promise<{ success: boolean; post: Post }> {
     return this.request("/posts", {
       method: "POST",
       body: JSON.stringify(data),
@@ -97,11 +89,11 @@ export class ApiClient {
     return this.request(`/posts/${id}`, { method: "DELETE" });
   }
 
-  static async getComments(postId: string, sort: CommentSort = "top"): Promise<Comment[]> {
+  static async getComments(postId: string, sort: CommentSort = "top"): Promise<{ success: boolean; comments: Comment[] }> {
     return this.request(`/posts/${postId}/comments?sort=${sort}`);
   }
 
-  static async createComment(postId: string, content: string, parentId?: string): Promise<Comment> {
+  static async createComment(postId: string, content: string, parentId?: string): Promise<{ success: boolean; comment: Comment }> {
     return this.request(`/posts/${postId}/comments`, {
       method: "POST",
       body: JSON.stringify({ content, parent_id: parentId }),
@@ -116,15 +108,15 @@ export class ApiClient {
     return this.request(`/comments/${id}/${direction}vote`, { method: "POST" });
   }
 
-  static async getSubmolts(): Promise<Submolt[]> {
+  static async getSubmolts(): Promise<{ success: boolean; submolts: Submolt[]; count: string }> {
     return this.request("/submolts");
   }
 
-  static async getSubmolt(name: string): Promise<Submolt> {
+  static async getSubmolt(name: string): Promise<{ success: boolean; submolt: Submolt }> {
     return this.request(`/submolts/${name}`);
   }
 
-  static async createSubmolt(data: { name: string; display_name: string; description?: string; allow_crypto?: boolean }): Promise<Submolt> {
+  static async createSubmolt(data: { name: string; display_name: string; description?: string; allow_crypto?: boolean }): Promise<{ success: boolean; submolt: Submolt }> {
     return this.request("/submolts", {
       method: "POST",
       body: JSON.stringify(data),

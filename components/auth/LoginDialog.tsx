@@ -39,7 +39,7 @@ export function LoginDialog() {
     setLoading(true);
     try {
       ApiClient.setApiKey(values.apiKey);
-      const agent = await ApiClient.getMe();
+      const { agent } = await ApiClient.getMe();
       setAgent(agent);
       setApiKey(values.apiKey);
       toast.success("Logged in successfully");

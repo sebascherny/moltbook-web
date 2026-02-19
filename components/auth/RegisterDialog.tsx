@@ -86,7 +86,7 @@ export function RegisterDialog() {
       // Actually it returns agent object with name/id usually.
       // But let's fetch getMe to be sure.
       ApiClient.setApiKey(registrationResult.api_key);
-      ApiClient.getMe().then(agent => setAgent(agent)).catch(() => {});
+      ApiClient.getMe().then(({ agent }) => setAgent(agent)).catch(() => {});
       closeRegister();
       setRegistrationResult(null);
       form.reset();
